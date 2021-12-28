@@ -1,3 +1,4 @@
+import json
 import re
 import os
 import sys
@@ -97,7 +98,7 @@ def check_update_chromedriver():
     try:
         chromeVersion=get_Chrome_version()
     except:
-        print('未安装Chrome，请在GooGle Chrome官网：https://www.google.cn/chrome/ 下载。')
+        print('未安装Chrome，请在Chrome官网：https://www.google.cn/chrome/ 下载。')
         return 0
     
     chrome_main_version=int(chromeVersion.split(".")[0]) # chrome主版本号
@@ -131,6 +132,17 @@ def find_and_paste(cookie):
     jd_cookie = pt_pin+';'+pt_key+';'
     pyperclip.copy(jd_cookie)
     return jd_cookie
+
+def put_cookie(cookie):
+    req_headers = {'Content-Type': 'application/json'}
+    req_body = json.dumps({"cookie": cookie})
+    response = requests.post("http://127.0.0.1:8090/jd/cookie/put", data=req_body, headers=req_headers)
+    print(response.text)
+    res_body = json.loads(response.text)
+    if res_body['status']:
+        print("提交 cookie 成功")
+    else:
+        print("提交 cookie 失败，错误信息：" + res_body['message'])
 
 def main():
     print('请在弹出的网页中登录账号。')
@@ -166,8 +178,12 @@ def main():
             if request.path == "/myJd/newhome.action":
                 cookie = request.headers["cookie"]
 
-    print('jd_cookie: ', find_and_paste(cookie))
+    jd_cookie = find_and_paste(cookie)
+    print('jd_cookie：', jd_cookie)
     print('已复制到剪切板！')
+
+    put_cookie(jd_cookie)
+
     input('按Enter键退出...')
 
     driver.close()
