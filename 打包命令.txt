@@ -1,3 +1,3 @@
 pyinstaller -F -p C:\Users\zhz\Desktop\JD_Get_Cookie\venv\Lib\site-packages main.py
 
-pyinstaller -D -i .\jd.ico  .\main.py
+pyinstaller -D -i .\jd.ico .\main.py
