@@ -7,10 +7,11 @@ import winreg
 import requests
 import time
 import pyperclip
-#from selenium import webdriver
-#from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+# from selenium import webdriver
+# from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from seleniumwire import webdriver
-#from seleniumwire.webdriver.common.desired_capabilities import DesiredCapabilities
+
+# from seleniumwire.webdriver.common.desired_capabilities import DesiredCapabilities
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_experimental_option('detach', True)
 chrome_options.add_experimental_option('w3c', False)
@@ -23,11 +24,12 @@ chrome_options.add_argument("--auto-open-devtools-for-tabs")
 # d = DesiredCapabilities.CHROME
 # d['loggingPrefs'] = { 'performance':'ALL' }
 
-url='http://npm.taobao.org/mirrors/chromedriver/' # chromedriver download link
+url = 'http://npm.taobao.org/mirrors/chromedriver/'  # chromedriver download link
+
 
 def get_path():
     return os.path.dirname(os.path.realpath(sys.argv[0]))
-    #return os.path.dirname(os.path.realpath(__file__))
+    # return os.path.dirname(os.path.realpath(__file__))
 
 
 def get_Chrome_version():
@@ -35,36 +37,38 @@ def get_Chrome_version():
     version, types = winreg.QueryValueEx(key, 'version')
     return version
 
+
 def get_server_chrome_versions():
     '''return all versions list'''
-    versionList=[]
-    url="http://npm.taobao.org/mirrors/chromedriver/"
+    versionList = []
+    url = "http://npm.taobao.org/mirrors/chromedriver/"
     rep = requests.get(url).text
     result = re.compile(r'\d.*?/</a>.*?Z').findall(rep)
-    for i in result:                               
-        version = re.compile(r'.*?/').findall(i)[0]         # 提取版本号
-        versionList.append(version[:-1])                  # 将所有版本存入列表
+    for i in result:
+        version = re.compile(r'.*?/').findall(i)[0]  # 提取版本号
+        versionList.append(version[:-1])  # 将所有版本存入列表
     return versionList
 
 
 def download_driver(download_url):
     '''下载文件'''
     file = requests.get(download_url)
-    with open("chromedriver.zip", 'wb') as zip_file:        # 保存文件到脚本所在目录
+    with open("chromedriver.zip", 'wb') as zip_file:  # 保存文件到脚本所在目录
         zip_file.write(file.content)
         print('下载成功')
 
+
 def download_lase_driver(download_url, chromeVersion, chrome_main_version):
     '''更新driver'''
-    versionList=get_server_chrome_versions()
+    versionList = get_server_chrome_versions()
     if chromeVersion in versionList:
-        download_url=f"{url}{chromeVersion}/chromedriver_win32.zip"
+        download_url = f"{url}{chromeVersion}/chromedriver_win32.zip"
     else:
         for version in versionList:
             if version.startswith(str(chrome_main_version)):
-                download_url=f"{url}{version}/chromedriver_win32.zip"
+                download_url = f"{url}{version}/chromedriver_win32.zip"
                 break
-        if download_url=="":
+        if download_url == "":
             print("暂无法找到与chrome兼容的chromedriver版本，请在http://npm.taobao.org/mirrors/chromedriver/ 核实。")
 
     download_driver(download_url=download_url)
@@ -78,6 +82,7 @@ def download_lase_driver(download_url, chromeVersion, chrome_main_version):
     else:
         print('更新后的Chromedriver版本为：', dri_version)
 
+
 def get_version():
     '''查询系统内的Chromedriver版本'''
     outstd2 = os.popen('chromedriver --version').read()
@@ -90,37 +95,39 @@ def get_version():
 
 def unzip_driver(path):
     '''解压Chromedriver压缩包到指定目录'''
-    f = zipfile.ZipFile("chromedriver.zip",'r')
+    f = zipfile.ZipFile("chromedriver.zip", 'r')
     for file in f.namelist():
         f.extract(file, path)
 
+
 def check_update_chromedriver():
     try:
-        chromeVersion=get_Chrome_version()
+        chromeVersion = get_Chrome_version()
     except:
         print('未安装Chrome，请在Chrome官网：https://www.google.cn/chrome/ 下载。')
         return 0
-    
-    chrome_main_version=int(chromeVersion.split(".")[0]) # chrome主版本号
+
+    chrome_main_version = int(chromeVersion.split(".")[0])  # chrome主版本号
 
     try:
-        driverVersion=get_version()
-        driver_main_version=int(driverVersion.split(".")[0]) # chromedriver主版本号
+        driverVersion = get_version()
+        driver_main_version = int(driverVersion.split(".")[0])  # chromedriver主版本号
     except:
         print('未安装Chromedriver，正在为您自动下载>>>')
-        download_url=""
+        download_url = ""
         if download_lase_driver(download_url, chromeVersion, chrome_main_version) == 0:
             return 0
-        driverVersion=get_version()
-        driver_main_version=int(driverVersion.split(".")[0]) # chromedriver主版本号
-    
-    download_url=""
-    if driver_main_version!=chrome_main_version:
+        driverVersion = get_version()
+        driver_main_version = int(driverVersion.split(".")[0])  # chromedriver主版本号
+
+    download_url = ""
+    if driver_main_version != chrome_main_version:
         print("chromedriver版本与chrome浏览器不兼容，更新中>>>")
         if download_lase_driver(download_url, chromeVersion, chrome_main_version) == 0:
             return 0
     else:
-       print("chromedriver版本已与chrome浏览器相兼容，无需更新chromedriver版本！") 
+        print("chromedriver版本已与chrome浏览器相兼容，无需更新chromedriver版本！")
+
 
 def find_and_paste(cookie):
     # 文件路径
@@ -129,17 +136,22 @@ def find_and_paste(cookie):
             pt_pin = item
         if 'pt_key' in item:
             pt_key = item
-    jd_cookie = pt_pin+';'+pt_key+';'
+    jd_cookie = pt_pin + ';' + pt_key + ';'
     pyperclip.copy(jd_cookie)
     return jd_cookie
+
 
 def put_cookie(cookie):
     try:
         req_headers = {'Content-Type': 'application/json'}
         req_body = json.dumps({"cookie": cookie})
-        response = requests.post("http://127.0.0.1:8090/jd/cookie/put", data=req_body, headers=req_headers)
+        response = requests.post("http://49.232.79.109:8090/jd/cookie/put", data=req_body, headers=req_headers)
     except requests.exceptions.ConnectionError:
         print("提交Cookie失败，服务器连接失败。")
+    except requests.exceptions.ConnectTimeout:
+        print("提交Cookie失败，服务器连接超时。")
+    except requests.exceptions.ReadTimeout:
+        print("提交Cookie失败，服务器响应超时。")
     else:
         if response.status_code == 200:
             print(response.text)
@@ -149,14 +161,15 @@ def put_cookie(cookie):
             else:
                 print("提交Cookie失败，错误信息：" + res_body['message'])
         else:
-            print("提交Cookie失败，响应码：" + response.status_code)
+            print("提交Cookie失败，HTTP状态码：" + response.status_code.__str__())
+
 
 def main():
     print('请在弹出的网页中登录账号。')
-    #driver = webdriver.Chrome(executable_path='chromedriver.exe', desired_capabilities=d, options=chrome_options)
-    driver = webdriver.Chrome(executable_path=get_path()+'\chromedriver.exe', options=chrome_options)
+    # driver = webdriver.Chrome(executable_path='chromedriver.exe', desired_capabilities=d, options=chrome_options)
+    driver = webdriver.Chrome(executable_path=get_path() + '\chromedriver.exe', options=chrome_options)
     driver.get("https://plogin.m.jd.com/login/login")
-    input('登陆后按Enter键继续...')
+    input('登陆后按 Enter 键继续...')
 
     driver.get("https://home.m.jd.com/myJd/newhome.action")
     time.sleep(2)
@@ -186,12 +199,12 @@ def main():
                 cookie = request.headers["cookie"]
 
     jd_cookie = find_and_paste(cookie)
-    print('jd_cookie：', jd_cookie)
-    print('已复制到剪切板！')
+    print('Cookie：', jd_cookie)
+    print('Cookie已复制到剪切板！')
 
     put_cookie(jd_cookie)
 
-    input('按Enter键退出...')
+    input('按 Enter 键退出...')
 
     driver.close()
 
