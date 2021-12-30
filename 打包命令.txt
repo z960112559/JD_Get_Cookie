@@ -1,3 +1,13 @@
-pyinstaller -F -p C:\Users\zhz\Desktop\JD_Get_Cookie\venv\Lib\site-packages main.py
+1.安装依赖：
+    pip install requests
+    pip install pyperclip
+    pip install selenium-wire
+    pip install pyinstaller
 
-pyinstaller -D -i .\jd.ico .\main.py
+2.打包成exe文件，输入命令：pyinstaller -i jd.ico -D main.py
+
+此命令打包出来有问题：pyinstaller -F -p C:\Users\zhz\Desktop\JD_Get_Cookie\venv\Lib\site-packages main.py
+
+
+
+
