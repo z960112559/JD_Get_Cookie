@@ -75,16 +75,6 @@ def get_driver_download_url(chrome_main_version):
     return download_url
 
 
-def get_server_chrome_versions():
-    version_list = []
-    rep = requests.get(url).text
-    result = re.compile(r'\d.*?/</a>.*?Z').findall(rep)
-    for i in result:
-        version = re.compile(r'.*?/').findall(i)[0]
-        version_list.append(version[:-1])  # 将所有版本存入列表
-    return version_list
-
-
 def download_driver(chrome_main_version):
     # 获取 Chromedriver 下载地址
     driver_download_url = get_driver_download_url(chrome_main_version)
