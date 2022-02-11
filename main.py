@@ -28,47 +28,6 @@ def get_chrome_version():
     return version
 
 
-def get_server_chrome_versions():
-    version_list = []
-    rep = requests.get(url).text
-    result = re.compile(r'\d.*?/</a>.*?Z').findall(rep)
-    for i in result:
-        version = re.compile(r'.*?/').findall(i)[0]  # 提取版本号
-        version_list.append(version[:-1])  # 将所有版本存入列表
-    return version_list
-
-
-def download_driver(download_url):
-    file = requests.get(download_url)
-    with open("chromedriver.zip", 'wb') as zip_file:  # 保存文件到脚本所在目录
-        zip_file.write(file.content)
-        print('下载Chromedriver成功')
-
-
-def download_lase_driver(download_url, chrome_version, chrome_main_version):
-    version_list = get_server_chrome_versions()
-    if chrome_version in version_list:
-        download_url = f"{url}{chrome_version}/chromedriver_win32.zip"
-    else:
-        for version in version_list:
-            if version.startswith(str(chrome_main_version)):
-                download_url = f"{url}{version}/chromedriver_win32.zip"
-                break
-        if download_url == "":
-            print("暂无法找到与Chrome兼容的Chromedriver版本，请在 http://npm.taobao.org/mirrors/chromedriver 核实。")
-
-    download_driver(download_url=download_url)
-    path = get_path()
-    print('当前路径为：', path)
-    unzip_driver(path)
-    os.remove("chromedriver.zip")
-    dri_version = get_driver_version()
-    if dri_version == 0:
-        return 0
-    else:
-        print('更新后的Chromedriver版本为：', dri_version)
-
-
 def get_driver_version():
     version = os.popen('chromedriver --version').read()
     try:
@@ -76,6 +35,88 @@ def get_driver_version():
     except:
         return 0
     return out
+
+
+def get_driver_server_versions():
+    version_list = []
+    response = requests.get("https://registry.npmmirror.com/-/binary/chromedriver")
+    response_body = json.loads(response.text)
+    for version in response_body:
+        version_list.append(version['name'].replace("/", "").split(".")[0])
+    return version_list
+
+
+def get_driver_download_url(chrome_main_version):
+    response1 = requests.get("https://registry.npmmirror.com/-/binary/chromedriver")
+    driver_version_list = json.loads(response1.text)
+
+    version_url = ""
+    for driver_version in driver_version_list:
+        driver_main_version = driver_version["name"].replace("/", "").split(".")[0]
+        if driver_main_version == chrome_main_version.__str__():
+            version_url = driver_version["url"]
+
+    if len(version_url) == 0:
+        print("暂无法找到与Chrome兼容的Chromedriver版本，请在 http://npm.taobao.org/mirrors/chromedriver/ 核实。")
+        input('按 Enter 键退出...')
+        sys.exit()
+
+    response2 = requests.get(version_url)
+    driver_platform_list = json.loads(response2.text)
+
+    download_url = ""
+    for driver_platform in driver_platform_list:
+        if driver_platform["name"] == "chromedriver_win32.zip":
+            download_url = driver_platform["url"]
+
+    if len(download_url) == 0:
+        print("暂无法找到与Chrome兼容的Chromedriver版本，请在 http://npm.taobao.org/mirrors/chromedriver/ 核实。")
+        input('按 Enter 键退出...')
+        sys.exit()
+
+    return download_url
+
+
+def get_server_chrome_versions():
+    version_list = []
+    rep = requests.get(url).text
+    result = re.compile(r'\d.*?/</a>.*?Z').findall(rep)
+    for i in result:
+        version = re.compile(r'.*?/').findall(i)[0]
+        version_list.append(version[:-1])  # 将所有版本存入列表
+    return version_list
+
+
+def download_driver(chrome_main_version):
+    # 获取 Chromedriver 下载地址
+    driver_download_url = get_driver_download_url(chrome_main_version)
+    if len(driver_download_url) == 0:
+        print("暂无法找到与Chrome兼容的Chromedriver版本，请在 http://npm.taobao.org/mirrors/chromedriver/ 核实。")
+        input('按 Enter 键退出...')
+        sys.exit()
+
+    print("Chromedriver下载地址：" + driver_download_url)
+
+    # 下载 Chromedriver，保存文件到脚本所在目录
+    file = requests.get(driver_download_url)
+    with open("chromedriver.zip", 'wb') as zip_file:
+        zip_file.write(file.content)
+        print('下载 Chromedriver 成功。')
+
+    # 解压 Chromedriver
+    path = get_path()
+    # print('当前路径为：', path)
+    unzip_driver(path)
+    os.remove("chromedriver.zip")
+    print('解压 Chromedriver 成功。')
+
+    # 返回更新后的版本号
+    dri_version = get_driver_version()
+    if dri_version == 0:
+        return 0
+    else:
+        print('当前Chromedriver版本：', dri_version)
+        return 1
 
 
 def unzip_driver(path):
@@ -87,9 +128,9 @@ def unzip_driver(path):
 def check_update_chromedriver():
     try:
         chrome_version = get_chrome_version()
-        print("Chrome版本：" + chrome_version)
+        print("当前Chrome版本：" + chrome_version)
     except:
-        print('未安装Chrome，请在官网 https://www.google.cn/chrome 下载。')
+        print('未安装Chrome！请先自行下载并安装Chrome后再试！')
         input('按 Enter 键退出...')
         sys.exit()
 
@@ -100,22 +141,20 @@ def check_update_chromedriver():
         driver_main_version = int(driver_version.split(".")[0])  # chromedriver主版本号
     except:
         print('未安装Chromedriver，正在为您自动下载>>>')
-        download_url = ""
-        if download_lase_driver(download_url, chrome_version, chrome_main_version) == 0:
+        if download_driver(chrome_main_version) == 0:
             return 0
         driver_version = get_driver_version()
         driver_main_version = int(driver_version.split(".")[0])  # chromedriver主版本号
 
-    download_url = ""
     if driver_main_version != chrome_main_version:
         print("Chromedriver版本与Chrome浏览器不兼容，更新中>>>")
-        if download_lase_driver(download_url, chrome_version, chrome_main_version) == 0:
+        if download_driver(chrome_main_version) == 0:
             return 0
     else:
         print("Chromedriver版本已与Chrome浏览器相兼容，无需更新Chromedriver版本！")
 
 
-def find_and_paste(cookie):
+def parse_copy_cookie(cookie):
     for item in cookie.split('; '):
         if 'pt_pin' in item:
             pt_pin = item
@@ -126,7 +165,7 @@ def find_and_paste(cookie):
     return jd_cookie
 
 
-def put_cookie(cookie):
+def submit_cookie(cookie):
     try:
         req_headers = {'Content-Type': 'application/json'}
         req_body = json.dumps({"cookie": cookie})
@@ -151,26 +190,26 @@ def put_cookie(cookie):
 
 def main():
     print('请在弹出的网页中登录账号。')
-    driver = webdriver.Chrome(executable_path=get_path() + "\chromedriver.exe", options=chrome_options)
+    driver = webdriver.Chrome(executable_path=(get_path() + "\chromedriver.exe"), options=chrome_options)
     driver.get("https://plogin.m.jd.com/login/login")
     input('登陆后按 Enter 键继续...')
 
     driver.get("https://home.m.jd.com/myJd/newhome.action")
-    time.sleep(2)
+    print('3秒后开始解析Cookie...')
+    time.sleep(3)
 
     for request in driver.requests:
         if request.response:
             if request.path == "/myJd/newhome.action":
                 cookie = request.headers["cookie"]
 
-    jd_cookie = find_and_paste(cookie)
+    jd_cookie = parse_copy_cookie(cookie)
     print('Cookie：', jd_cookie)
-    print('Cookie已复制到剪切板！')
+    print('已复制Cookie到剪切板！')
 
-    put_cookie(jd_cookie)
+    submit_cookie(jd_cookie)
 
     input('按 Enter 键退出...')
-
     driver.close()
 
 
