@@ -15,8 +15,6 @@ chrome_options.add_experimental_option('w3c', False)
 chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
 chrome_options.add_argument("--auto-open-devtools-for-tabs")
 
-url = 'http://npm.taobao.org/mirrors/chromedriver/'
-
 
 def get_path():
     return os.path.dirname(os.path.realpath(sys.argv[0]))
