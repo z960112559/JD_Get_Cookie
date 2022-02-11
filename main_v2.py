@@ -11,6 +11,7 @@ from seleniumwire import webdriver
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_experimental_option('detach', True)
 chrome_options.add_experimental_option('w3c', False)
+chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
 
 
 def get_path():
