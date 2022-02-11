@@ -198,7 +198,8 @@ def main():
     # print('3秒后开始解析Cookie...')
     # time.sleep(3)
 
-    driver.get("https://plogin.m.jd.com/login/login?appid=300&returnurl=https%3A%2F%2Fhome.m.jd.com%2FmyJd%2Fnewhome.action")
+    driver.get(
+        "https://plogin.m.jd.com/login/login?appid=300&returnurl=https%3A%2F%2Fhome.m.jd.com%2FmyJd%2Fnewhome.action")
     input('登录后按 Enter 键继续...')
     print('3秒后开始解析Cookie...')
     time.sleep(3)
@@ -215,9 +216,9 @@ def main():
 
     input('按 Enter 键退出...')
     driver.close()
+    sys.exit()
 
 
 if __name__ == '__main__':
-
     check_update_chromedriver()
     main()

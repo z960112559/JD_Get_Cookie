@@ -6,6 +6,7 @@
 
 2.打包成exe文件，输入命令：pyinstaller -i jd.ico -D main.py
 
+
 此命令打包出来有问题：pyinstaller -F -p C:\Users\zhz\Desktop\JD_Get_Cookie\venv\Lib\site-packages main.py
 
 
