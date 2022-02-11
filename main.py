@@ -185,10 +185,10 @@ def main():
     print('请在弹出的网页中登录账号。')
     driver = webdriver.Chrome(executable_path=(get_path() + "\chromedriver.exe"), options=chrome_options)
 
-    # window_size = driver.get_window_size()
-    # window_width = window_size['width']
-    # window_height = window_size['height']
-    # driver.set_window_size(window_width / 2, window_height)
+    window_size = driver.get_window_size()
+    window_width = window_size['width']
+    window_height = window_size['height']
+    driver.set_window_size(window_width / 2, window_height)
 
     driver.get("https://plogin.m.jd.com/login/login?appid=300&returnurl=https%3A%2F%2Fhome.m.jd.com%2FmyJd%2Fnewhome.action")
     input('登录后按 Enter 键继续...')
