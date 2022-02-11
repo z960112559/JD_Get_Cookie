@@ -12,9 +12,8 @@ chrome_options = webdriver.ChromeOptions()
 chrome_options.add_experimental_option('detach', True)
 chrome_options.add_experimental_option('w3c', False)
 chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
+
 # chrome_options.add_argument("--auto-open-devtools-for-tabs")
-
-
 # chrome_options.add_argument('start-minimized')
 # chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
 # chrome_options.add_experimental_option('excludeSwitches', ['enable-automation'])

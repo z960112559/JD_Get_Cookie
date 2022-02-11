@@ -13,6 +13,13 @@ chrome_options.add_experimental_option('detach', True)
 chrome_options.add_experimental_option('w3c', False)
 chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
 
+# chrome_options.add_argument("--auto-open-devtools-for-tabs")
+# chrome_options.add_argument('start-minimized')
+# chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
+# chrome_options.add_experimental_option('excludeSwitches', ['enable-automation'])
+# chrome_options.add_argument("--window-size=1920,500")
+# chrome_options.add_argument("--auto-open-devtools-for-tabs")
+
 
 def get_path():
     return os.path.dirname(os.path.realpath(sys.argv[0]))
