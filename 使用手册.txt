@@ -8,4 +8,4 @@
 
 5、登录成功再等待几秒后在命令行窗口按 Enter 回车
 
-6、如果程序输出类似 "pt_pin=xxx;pt_key=xxx" 则表示获取 cookie 成功，此时 cookie 也会被自动复制到剪切板并提交到云端。
+6、如果程序输出类似 "pt_pin=xxx;pt_key=xxx" 则表示获取 cookie 成功，此时 cookie 也会自动复制并提交到云端。

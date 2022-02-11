@@ -203,7 +203,6 @@ def main():
 
     input('按 Enter 键退出...')
     driver.close()
-    sys.exit()
 
 
 if __name__ == '__main__':
