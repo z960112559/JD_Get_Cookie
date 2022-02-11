@@ -11,8 +11,13 @@ from seleniumwire import webdriver
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_experimental_option('detach', True)
 chrome_options.add_experimental_option('w3c', False)
-chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
-chrome_options.add_argument("--auto-open-devtools-for-tabs")
+
+
+# chrome_options.add_argument('start-minimized')
+# chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
+# chrome_options.add_experimental_option('excludeSwitches', ['enable-automation'])
+# chrome_options.add_argument("--window-size=1920,500")
+# chrome_options.add_argument("--auto-open-devtools-for-tabs")
 
 
 def get_path():
@@ -178,12 +183,11 @@ def submit_cookie(cookie):
 def main():
     print('请在弹出的网页中登录账号。')
     driver = webdriver.Chrome(executable_path=(get_path() + "\chromedriver.exe"), options=chrome_options)
-    # driver.get("https://plogin.m.jd.com/login/login")
-    # input('登录后按 Enter 键继续...')
-    #
-    # driver.get("https://home.m.jd.com/myJd/newhome.action")
-    # print('3秒后开始解析Cookie...')
-    # time.sleep(3)
+
+    window_size = driver.get_window_size()
+    window_width = window_size['width']
+    window_height = window_size['height']
+    driver.set_window_size(window_width / 2, window_height)
 
     driver.get(
         "https://plogin.m.jd.com/login/login?appid=300&returnurl=https%3A%2F%2Fhome.m.jd.com%2FmyJd%2Fnewhome.action")
@@ -191,11 +195,23 @@ def main():
     print('3秒后开始解析Cookie...')
     time.sleep(3)
 
-    for request in driver.requests:
-        if request.response and request.path == "/myJd/newhome.action":
-            cookie = request.headers["cookie"]
+    pt_pin = driver.get_cookie("pt_pin")["value"]
+    if len(pt_pin) == 0:
+        print("解析 pt_pin 失败，请退出后重试！")
+        input('按 Enter 键退出...')
+        driver.close()
+        sys.exit()
 
-    jd_cookie = parse_copy_cookie(cookie)
+    pt_key = driver.get_cookie("pt_key")["value"]
+    if len(pt_key) == 0:
+        print("解析 pt_key 失败，请退出后重试！")
+        input('按 Enter 键退出...')
+        driver.close()
+        sys.exit()
+
+    jd_cookie = ("pt_pin=" + pt_pin + ';' + "pt_key=" + pt_key + ';')
+    pyperclip.copy(jd_cookie)
+
     print('解析Cookie成功：', jd_cookie)
     print('已复制Cookie到剪切板！')
 
