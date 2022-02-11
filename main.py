@@ -181,7 +181,7 @@ def submit_cookie(cookie):
             print(response.text)
             res_body = json.loads(response.text)
             if res_body['status']:
-                print("提交Cookie成功")
+                print("提交Cookie成功。")
             else:
                 print("提交Cookie失败，错误信息：" + res_body['message'])
         else:
@@ -191,20 +191,24 @@ def submit_cookie(cookie):
 def main():
     print('请在弹出的网页中登录账号。')
     driver = webdriver.Chrome(executable_path=(get_path() + "\chromedriver.exe"), options=chrome_options)
-    driver.get("https://plogin.m.jd.com/login/login")
-    input('登陆后按 Enter 键继续...')
+    # driver.get("https://plogin.m.jd.com/login/login")
+    # input('登录后按 Enter 键继续...')
+    #
+    # driver.get("https://home.m.jd.com/myJd/newhome.action")
+    # print('3秒后开始解析Cookie...')
+    # time.sleep(3)
 
-    driver.get("https://home.m.jd.com/myJd/newhome.action")
+    driver.get("https://plogin.m.jd.com/login/login?appid=300&returnurl=https%3A%2F%2Fhome.m.jd.com%2FmyJd%2Fnewhome.action")
+    input('登录后按 Enter 键继续...')
     print('3秒后开始解析Cookie...')
     time.sleep(3)
 
     for request in driver.requests:
-        if request.response:
-            if request.path == "/myJd/newhome.action":
-                cookie = request.headers["cookie"]
+        if request.response and request.path == "/myJd/newhome.action":
+            cookie = request.headers["cookie"]
 
     jd_cookie = parse_copy_cookie(cookie)
-    print('Cookie：', jd_cookie)
+    print('解析Cookie成功：', jd_cookie)
     print('已复制Cookie到剪切板！')
 
     submit_cookie(jd_cookie)
@@ -214,5 +218,6 @@ def main():
 
 
 if __name__ == '__main__':
+
     check_update_chromedriver()
     main()

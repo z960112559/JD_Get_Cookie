@@ -1,0 +1,11 @@
+1、安装 Chrome 浏览器（谷歌浏览器），下载地址：https://pc.qq.com/search.html#!keyword=chrome
+
+2、进入 main 文件夹内
+
+3、运行 main.exe 程序（首先会出现命令行窗口，再出现一个网页）
+
+4、在打开的网页中用账号密码或短信验证码登录京东，等待几秒（QQ登录会报错，图形验证失败的话换密码登录）
+
+5、等待几秒后在命令行窗口按 Enter 回车
+
+6、如果程序输出类似“pt_pin=xxxx;pt_key=xxxxx”则表示获取 cookie 成功，此时 cookie 也会被自动复制到剪切板并提交到云端
