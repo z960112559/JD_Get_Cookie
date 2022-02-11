@@ -182,11 +182,10 @@ def main():
     window_height = window_size['height']
     driver.set_window_size(window_width / 2, window_height)
 
-    driver.get(
-        "https://plogin.m.jd.com/login/login?appid=300&returnurl=https%3A%2F%2Fhome.m.jd.com%2FmyJd%2Fnewhome.action")
+    driver.get("https://plogin.m.jd.com/login/login?appid=300&returnurl=https%3A%2F%2Fhome.m.jd.com%2FmyJd%2Fnewhome.action")
 
     jd_cookie = ""
-    loop_count = 100
+    loop_count = 120
     sleep_time = 5
     for i in range(0, loop_count):
         print("检测登录状态，剩余时间：" + ((loop_count * sleep_time) - (i * sleep_time)).__str__() + "秒")
